@@ -47,23 +47,72 @@ pdfUpload.addEventListener('change', async (e) => {
 });
 
 // 2. LLM ENGINE LOGIC
+// ... existing imports ...
+
+// Use a very robust model ID
+const selectedModel = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
+
 btnLoadLlm.addEventListener('click', async () => {
+    // Check for WebGPU immediately
+    if (!navigator.gpu) {
+        alert("WebGPU is not supported in this browser. Please use Chrome/Edge or enable it in flags.");
+        return;
+    }
+
     btnLoadLlm.disabled = true;
     progressContainer.style.display = 'block';
-
-    const initProgressCallback = (report) => {
-        const p = Math.round(report.progress * 100);
-        llmProgress.style.width = p + "%";
-        llmProgress.innerText = p + "%";
-        llmStatus.innerText = report.text;
-    };
+    llmStatus.innerText = "Initializing WebGPU and fetching model...";
 
     try {
-        engine = await webllm.CreateMLCEngine(selectedModel, { initProgressCallback });
+        // We use the direct MLCEngine to have more control
+        engine = await webllm.CreateMLCEngine(selectedModel, {
+            initProgressCallback: (report) => {
+                const p = Math.round(report.progress * 100);
+                llmProgress.style.width = p + "%";
+                llmProgress.innerText = p + "%";
+                llmStatus.innerText = report.text;
+            }
+        });
+        
         llmStatus.innerText = "✅ AI Engine Active!";
         checkReadyState();
     } catch (err) {
-        llmStatus.innerText = "❌ WebGPU Error: " + err.message;
+        console.error("Initialization Failed:", err);
+        llmStatus.innerText = "❌ Error: " + err.message;
+        btnLoadLlm.disabled = false;
+        alert("Failed to load model. Check console for details.");
+    }
+});// ... existing imports ...
+
+btnLoadLlm.addEventListener('click', async () => {
+    // Check for WebGPU immediately
+    if (!navigator.gpu) {
+        alert("WebGPU is not supported in this browser. Please use Chrome/Edge or enable it in flags.");
+        return;
+    }
+
+    btnLoadLlm.disabled = true;
+    progressContainer.style.display = 'block';
+    llmStatus.innerText = "Initializing WebGPU and fetching model...";
+
+    try {
+        // We use the direct MLCEngine to have more control
+        engine = await webllm.CreateMLCEngine(selectedModel, {
+            initProgressCallback: (report) => {
+                const p = Math.round(report.progress * 100);
+                llmProgress.style.width = p + "%";
+                llmProgress.innerText = p + "%";
+                llmStatus.innerText = report.text;
+            }
+        });
+        
+        llmStatus.innerText = "✅ AI Engine Active!";
+        checkReadyState();
+    } catch (err) {
+        console.error("Initialization Failed:", err);
+        llmStatus.innerText = "❌ Error: " + err.message;
+        btnLoadLlm.disabled = false;
+        alert("Failed to load model. Check console for details.");
     }
 });
 
