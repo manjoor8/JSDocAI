@@ -1,7 +1,8 @@
-import { WebPDFLoader } from "https://esm.sh/@langchain/community/document_loaders/web/pdf";
-import { RecursiveCharacterTextSplitter } from "https://esm.sh/langchain/text_splitter";
-import { MemoryVectorStore } from "https://esm.sh/langchain/vectorstores/memory";
-import { HuggingFaceTransformersEmbeddings } from "https://esm.sh/@langchain/community/embeddings/hf_transformers";
+// Updated stable imports for 2025
+import { WebPDFLoader } from "https://esm.sh/@langchain/community@0.3.0/document_loaders/web/pdf";
+import { RecursiveCharacterTextSplitter } from "https://esm.sh/@langchain/textsplitters@0.1.0";
+import { MemoryVectorStore } from "https://esm.sh/langchain@0.3.0/vectorstores/memory";
+import { HuggingFaceTransformersEmbeddings } from "https://esm.sh/@langchain/community@0.3.0/embeddings/hf_transformers";
 import * as webllm from "https://esm.run/@mlc-ai/web-llm";
 
 // Immediate Check: Is the security patch working?
