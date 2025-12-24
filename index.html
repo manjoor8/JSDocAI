@@ -3,60 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local JS RAG - No Server</title>
+    <title>GitHub Pages Local RAG</title>
+    <script src="coi-serviceworker.js"></script>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        #chat-window { height: 400px; overflow-y: auto; background: #fdfdfd; border: 1px solid #ddd; }
-        .msg { margin-bottom: 15px; padding: 10px; border-radius: 8px; }
-        .user-msg { background: #e7f3ff; align-self: flex-end; }
-        .ai-msg { background: #f1f1f1; }
-        #progress-container { display: none; }
+        #chat-window { height: 400px; overflow-y: auto; border: 1px solid #ddd; background: #fff; }
+        .progress { height: 25px; display: none; }
     </style>
 </head>
 <body class="bg-light">
     <div class="container py-4">
-        <h2 class="text-center mb-4">Pure Client-Side RAG (WebGPU)</h2>
+        <h2 class="mb-4 text-primary text-center">Browser AI: Private PDF Chat</h2>
         
-        <div class="row g-3">
+        <div class="row">
             <div class="col-md-4">
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">1. Load Knowledge</h5>
-                        <input type="file" id="pdf-upload" class="form-control mb-2" accept=".pdf">
-                        <div id="index-status" class="small text-muted">Awaiting PDF...</div>
-                    </div>
+                <div class="card p-3 shadow-sm mb-3">
+                    <h6>1. Select PDF</h6>
+                    <input type="file" id="pdf-upload" class="form-control" accept=".pdf">
+                    <small id="pdf-status" class="text-muted">Waiting for file...</small>
                 </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">2. Start AI Engine</h5>
-                        <button id="btn-load-llm" class="btn btn-primary w-100 mb-2">Initialize Llama 3.2 (1.3GB)</button>
-                        <div id="progress-container">
-                            <div class="progress" style="height: 20px;">
-                                <div id="llm-progress" class="progress-bar" style="width: 0%;">0%</div>
-                            </div>
-                            <small id="llm-status" class="text-muted d-block mt-1">Ready to download...</small>
-                        </div>
-                    </div>
+                <div class="card p-3 shadow-sm">
+                    <h6>2. Setup AI Engine</h6>
+                    <button id="load-ai" class="btn btn-dark w-100 mb-2">Initialize AI (1.3GB)</button>
+                    <div class="progress mb-2"><div id="ai-bar" class="progress-bar">0%</div></div>
+                    <small id="ai-status" class="text-muted">Model not loaded.</small>
                 </div>
             </div>
-
+            
             <div class="col-md-8">
-                <div class="card shadow-sm">
-                    <div id="chat-window" class="card-body d-flex flex-column">
-                        <div class="text-center text-muted mt-5">Upload a PDF and initialize the AI to start chatting.</div>
-                    </div>
-                    <div class="card-footer bg-white">
-                        <div class="input-group">
-                            <input type="text" id="user-input" class="form-control" placeholder="Ask a question..." disabled>
-                            <button id="btn-send" class="btn btn-success" disabled>Send</button>
-                        </div>
-                    </div>
+                <div id="chat-window" class="p-3 rounded mb-2"></div>
+                <div class="input-group">
+                    <input type="text" id="user-input" class="form-control" placeholder="Ask about the PDF..." disabled>
+                    <button id="send-btn" class="btn btn-primary" disabled>Ask</button>
                 </div>
             </div>
         </div>
     </div>
-
     <script type="module" src="app.js"></script>
 </body>
 </html>
