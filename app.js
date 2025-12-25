@@ -5,8 +5,8 @@ import { MemoryVectorStore } from "https://esm.sh/langchain@0.3.8/vectorstores/m
 import * as webllm from "https://esm.run/@mlc-ai/web-llm@0.2.46";
 
 // 💡 FIX: We use the global Transformers.js from a script tag to bypass the ESM bug.
-// Add this line to your index.html <head>: 
-// <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2"></script>
+// Add this line to your index.html <head> (already present):
+// <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js"></script>
 
 /**
  * Custom Embedding class using the GLOBAL 'transformers' object
@@ -15,11 +15,22 @@ import * as webllm from "https://esm.run/@mlc-ai/web-llm@0.2.46";
 class SimpleEmbeddings {
     constructor() {
         this.pipe = null;
+        this.transformers = null;
+    }
+    resolveTransformers() {
+        if (this.transformers) return this.transformers;
+        const globalTf = window.transformers || window.Transformers;
+        if (!globalTf?.pipeline) {
+            throw new Error("Transformers.js failed to load. Check the CDN <script> tag.");
+        }
+        this.transformers = globalTf;
+        return this.transformers;
     }
     async getPipe() {
         if (!this.pipe) {
+            const tf = this.resolveTransformers();
             // Accessing 'transformers' from the global window object loaded in index.html
-            this.pipe = await window.Transformers.pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+            this.pipe = await tf.pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
         }
         return this.pipe;
     }
@@ -112,6 +123,11 @@ document.getElementById('load-ai').onclick = async () => {
 
 sendBtn.onclick = async () => {
     const question = userInput.value;
+    if (!question.trim()) return;
+    if (!vectorStore || !engine) {
+        log("System not ready. Load a PDF and initialize AI first.");
+        return;
+    }
     userInput.value = "";
     appendMsg("User", question);
     log("Searching context...");
